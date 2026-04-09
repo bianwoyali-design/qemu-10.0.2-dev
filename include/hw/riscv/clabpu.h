@@ -1,0 +1,22 @@
+#ifndef HW_RISCV_CLABPU_H
+#define HW_RISCV_CLABPU_H
+
+#include "hw/boards.h"
+#include "hw/riscv/riscv_hart.h"
+#include "hw/sysbus.h"
+
+#define TYPE_CLABPU_MACHINE MACHINE_TYPE_NAME("clabpu")
+typedef struct CLabPUState CLabPUState;
+DECLARE_INSTANCE_CHECKER(CLabPUState, CLABPU_MACHINE, TYPE_CLABPU_MACHINE)
+
+void clabpu_machine_init(ObjectClass *oc, void *data);
+
+struct CLabPUState {
+	/*< private >*/
+	MachineState parent;
+
+	/*< public >*/
+	RISCVHartArrayState soc;
+};
+
+#endif // HW_RISCV_CLABPU_H
