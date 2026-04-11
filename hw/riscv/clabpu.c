@@ -4,6 +4,7 @@
 #include "qom/object.h"
 #include "hw/boards.h"
 #include "hw/riscv/clabpu.h"
+#include "hw/intc/clabpu_intc.h"
 #include "qapi/error.h"
 #include "exec/address-spaces.h"
 
@@ -11,8 +12,30 @@ static const MemMapEntry clabpu_memmap[] = {
 	[CLABPU_MROM] = { 0x1000, 0xf000 },
 	[CLABPU_HTIF] = { 0x1000000, 0x1000 },
 	[CLABPU_CLINT] = { 0x2000000, 0x10000 },
+	[CLABPU_INTC_ADDR] = { 0x10000000, 0x1000 },
 	[CLABPU_DRAM] = { 0x80000000, 0x0 },
 };
+
+static void clabpu_init_intc(CLabPUState *clabpu, MachineState *machine)
+{
+	DeviceState *dev;
+	SysBusDevice *sbd;
+
+	dev = qdev_new(TYPE_CLABPU_INTC);
+	sbd = SYS_BUS_DEVICE(dev);
+
+	// append intc to the machine's device tree
+	object_property_add_child(OBJECT(machine), "intc", OBJECT(dev));
+
+	sysbus_realize_and_unref(sbd, &error_fatal);
+	sysbus_mmio_map(sbd, 0, clabpu_memmap[CLABPU_INTC_ADDR].base);
+
+	// support a single CPU for simplicity
+	RISCVCPU *cpu = &clabpu->soc.harts[0];
+	sysbus_connect_irq(sbd, 0, qdev_get_gpio_in(DEVICE(cpu), IRQ_M_EXT));
+
+	clabpu->intc = dev;
+}
 
 static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine)
 {

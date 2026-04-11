@@ -13,6 +13,7 @@ enum {
 	CLABPU_MROM,
 	CLABPU_HTIF,
 	CLABPU_CLINT,
+	CLABPU_INTC_ADDR,
 	CLABPU_DRAM,
 };
 
@@ -24,6 +25,7 @@ struct CLabPUState {
 
 	/*< public >*/
 	RISCVHartArrayState soc;
+	DeviceState *intc;
 };
 
 #endif // HW_RISCV_CLABPU_H
