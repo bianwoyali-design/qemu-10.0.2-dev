@@ -5,12 +5,14 @@
 #include "hw/boards.h"
 #include "hw/riscv/clabpu.h"
 #include "qapi/error.h"
+#include "exec/address-spaces.h"
 
-static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine);
-static void clabpu_init_mem(CLabPUState *clabpu, MachineState *machine);
-static void clabpu_init_dev(CLabPUState *clabpu, MachineState *machine);
-static void clabpu_init_boot(CLabPUState *clabpu);
-static void clabpu_machine_instance_init(Object *obj);
+static const MemMapEntry clabpu_memmap[] = {
+	[CLABPU_MROM] = { 0x1000, 0xf000 },
+	[CLABPU_HTIF] = { 0x1000000, 0x1000 },
+	[CLABPU_CLINT] = { 0x2000000, 0x10000 },
+	[CLABPU_DRAM] = { 0x80000000, 0x0 },
+};
 
 static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine)
 {
@@ -51,24 +53,20 @@ static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine)
 	sysbus_realize(SYS_BUS_DEVICE(&clabpu->soc), &error_fatal);
 }
 
-static void clabpu_init(MachineState *machine)
-{
-	CLabPUState *clabpu = CLABPU_MACHINE(machine);
-
-	clabpu_init_cpu(clabpu, machine);
-	clabpu_init_mem(clabpu, machine);
-	clabpu_init_dev(clabpu, machine);
-	clabpu_init_boot(clabpu);
-}
-
 static void clabpu_init_mem(CLabPUState *clabpu, MachineState *machine)
 {
-	/*
-	 * Step 1 for board bring-up:
-	 * Map RAM/ROM here. Keep it empty first so the machine can compile.
-	 */
-	(void)clabpu;
-	(void)machine;
+	const MemMapEntry *memmap = clabpu_memmap;
+	MemoryRegion *system_memory = get_system_memory();
+	MemoryRegion *mask_rom = g_new(MemoryRegion, 1);
+
+	/*register system main memory*/
+	memory_region_add_subregion(system_memory, memmap[CLABPU_DRAM].base,
+				    machine->ram);
+	/*boot rom*/
+	memory_region_init_rom(mask_rom, NULL, "riscv.clabpu.mrom",
+			       memmap[CLABPU_MROM].size, &error_fatal);
+	memory_region_add_subregion(system_memory, memmap[CLABPU_MROM].base,
+				    mask_rom);
 }
 
 static void clabpu_init_dev(CLabPUState *clabpu, MachineState *machine)
@@ -94,6 +92,16 @@ static void clabpu_machine_instance_init(Object *obj)
 {
 	/* Optional per-instance default properties. */
 	(void)obj;
+}
+
+static void clabpu_init(MachineState *machine)
+{
+	CLabPUState *clabpu = CLABPU_MACHINE(machine);
+
+	clabpu_init_cpu(clabpu, machine);
+	clabpu_init_mem(clabpu, machine);
+	clabpu_init_dev(clabpu, machine);
+	clabpu_init_boot(clabpu);
 }
 
 void clabpu_machine_init(ObjectClass *oc, void *data)

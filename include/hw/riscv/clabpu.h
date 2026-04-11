@@ -9,6 +9,13 @@
 typedef struct CLabPUState CLabPUState;
 DECLARE_INSTANCE_CHECKER(CLabPUState, CLABPU_MACHINE, TYPE_CLABPU_MACHINE)
 
+enum {
+	CLABPU_MROM,
+	CLABPU_HTIF,
+	CLABPU_CLINT,
+	CLABPU_DRAM,
+};
+
 void clabpu_machine_init(ObjectClass *oc, void *data);
 
 struct CLabPUState {
