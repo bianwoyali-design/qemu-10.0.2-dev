@@ -1,4 +1,5 @@
 #ifndef HW_RISCV_CLABPU_EDC_H
+#define HW_RISCV_CLABPU_EDC_H
 
 #include "hw/sysbus.h"
 
