@@ -1,6 +1,7 @@
 #include "qemu/osdep.h"
 #include "qemu/log.h"
 #include "hw/irq.h"
+#include "qemu/typedefs.h"
 #include "hw/intc/clabpu_intc.h"
 #include "migration/vmstate.h"
 
@@ -195,4 +196,4 @@ static void clabpu_intc_register_types(void)
 	type_register_static(&clabpu_intc_info);
 }
 
-type_init(clabpu_intc_register_types);
+type_init(clabpu_intc_register_types)

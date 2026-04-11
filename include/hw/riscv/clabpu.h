@@ -26,6 +26,7 @@ struct CLabPUState {
 	/*< public >*/
 	RISCVHartArrayState soc;
 	DeviceState *intc;
+	DeviceState *edc;
 };
 
 #endif // HW_RISCV_CLABPU_H

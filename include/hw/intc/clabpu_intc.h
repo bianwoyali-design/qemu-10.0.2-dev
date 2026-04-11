@@ -14,11 +14,15 @@
 #define INTC_IRQ_PRIORITY_BASE 0x08 /* Priority registers (0x08-0x87) */
 #define INTC_IRQ_STATUS 0x8C /* Current interrupt status */
 
-#define TYPE_CLABPU_INTC "clabpu_intc"
+#define TYPE_CLABPU_INTC "clabpu-intc"
+typedef struct CLabPUIntcState CLabPUIntcState;
 OBJECT_DECLARE_SIMPLE_TYPE(CLabPUIntcState, CLABPU_INTC)
 
 struct CLabPUIntcState {
+	/*< private >*/
 	SysBusDevice parent_obj;
+
+	/*< public >*/
 	MemoryRegion iomem;
 	uint32_t pending;
 	uint32_t enable;

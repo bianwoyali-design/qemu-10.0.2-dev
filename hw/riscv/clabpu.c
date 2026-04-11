@@ -1,10 +1,12 @@
 #include "qemu/osdep.h"
+#include "qemu/typedefs.h"
 #include "hw/riscv/numa.h"
 #include "qemu/error-report.h"
 #include "qom/object.h"
 #include "hw/boards.h"
 #include "hw/riscv/clabpu.h"
 #include "hw/intc/clabpu_intc.h"
+#include "hw/riscv/clabpu_edc.h"
 #include "qapi/error.h"
 #include "exec/address-spaces.h"
 
@@ -35,6 +37,25 @@ static void clabpu_init_intc(CLabPUState *clabpu, MachineState *machine)
 	sysbus_connect_irq(sbd, 0, qdev_get_gpio_in(DEVICE(cpu), IRQ_M_EXT));
 
 	clabpu->intc = dev;
+}
+
+static void clabpu_init_edc(CLabPUState *clabpu)
+{
+	DeviceState *dev;
+	SysBusDevice *sbd;
+
+	dev = qdev_new(TYPE_CLABPU_EDC);
+	sbd = SYS_BUS_DEVICE(dev);
+
+	object_property_add_child(OBJECT(clabpu), "edc", OBJECT(dev));
+
+	sysbus_realize_and_unref(sbd, &error_fatal);
+	sysbus_mmio_map(sbd, 0, CLABPU_MMAP_EDC_REG);
+
+	sysbus_connect_irq(sbd, 0,
+			   qdev_get_gpio_in(clabpu->intc, CLABPU_IRQ_EDC_ERR));
+
+	clabpu->edc = dev;
 }
 
 static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine)
@@ -94,12 +115,8 @@ static void clabpu_init_mem(CLabPUState *clabpu, MachineState *machine)
 
 static void clabpu_init_dev(CLabPUState *clabpu, MachineState *machine)
 {
-	/*
-	 * Step 2 for board bring-up:
-	 * Create and map devices (UART/CLINT/PLIC/...).
-	 */
-	(void)clabpu;
-	(void)machine;
+	clabpu_init_intc(clabpu, machine);
+	clabpu_init_edc(clabpu);
 }
 
 static void clabpu_init_boot(CLabPUState *clabpu)
