@@ -10,24 +10,24 @@ typedef struct CLabPUState CLabPUState;
 DECLARE_INSTANCE_CHECKER(CLabPUState, CLABPU_MACHINE, TYPE_CLABPU_MACHINE)
 
 enum {
-	CLABPU_MROM,
-	CLABPU_HTIF,
-	CLABPU_CLINT,
-	CLABPU_INTC_ADDR,
-	CLABPU_TIMER_ADDR,
-	CLABPU_DRAM,
+    CLABPU_MROM,
+    CLABPU_HTIF,
+    CLABPU_CLINT,
+    CLABPU_INTC_ADDR,
+    CLABPU_TIMER_ADDR,
+    CLABPU_DRAM,
 };
 
 void clabpu_machine_init(ObjectClass *oc, void *data);
 
 struct CLabPUState {
-	/*< private >*/
-	MachineState parent;
+    /*< private >*/
+    MachineState parent;
 
-	/*< public >*/
-	RISCVHartArrayState soc;
-	DeviceState *intc;
-	DeviceState *edc;
+    /*< public >*/
+    RISCVHartArrayState soc;
+    DeviceState *intc;
+    DeviceState *edc;
 };
 
-#endif // HW_RISCV_CLABPU_H
+#endif /* HW_RISCV_CLABPU_H */

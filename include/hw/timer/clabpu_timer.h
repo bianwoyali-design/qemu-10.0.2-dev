@@ -23,28 +23,28 @@
 OBJECT_DECLARE_SIMPLE_TYPE(CLabPUTimerState, CLABPU_TIMER)
 
 typedef struct clabpu_clock {
-	QEMUTimer *qemu_timer;
-	uint32_t *trigger;
-	int64_t restart;
-	double duration;
+    QEMUTimer *qemu_timer;
+    uint32_t *trigger;
+    int64_t restart;
+    double duration;
 } clabpu_clock_t;
 
 typedef struct CLabPUTimerState {
-	/*< private >*/
-	SysBusDevice parent_obj;
+    /*< private >*/
+    SysBusDevice parent_obj;
 
-	/*< public >*/
-	MemoryRegion iomem;
+    /*< public >*/
+    MemoryRegion iomem;
 
-	/*< Timer registers >*/
-	uint32_t counter;
-	uint32_t control;
-	uint32_t status;
-	uint32_t prescaler;
+    /*< Timer registers >*/
+    uint32_t counter;
+    uint32_t control;
+    uint32_t status;
+    uint32_t prescaler;
 
-	qemu_irq irq;
-	clabpu_clock_t tick;
-	uint32_t frequency;
+    qemu_irq irq;
+    clabpu_clock_t tick;
+    uint32_t frequency;
 
 } CLabPUTimerState;
 

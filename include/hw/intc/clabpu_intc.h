@@ -19,21 +19,21 @@ typedef struct CLabPUIntcState CLabPUIntcState;
 OBJECT_DECLARE_SIMPLE_TYPE(CLabPUIntcState, CLABPU_INTC)
 
 struct CLabPUIntcState {
-	/*< private >*/
-	SysBusDevice parent_obj;
+    /*< private >*/
+    SysBusDevice parent_obj;
 
-	/*< public >*/
-	MemoryRegion iomem;
-	uint32_t pending;
-	uint32_t enable;
-	uint8_t priority[CLABPU_INTC_NUM_SOURCES];
-	qemu_irq cpu_irq;
+    /*< public >*/
+    MemoryRegion iomem;
+    uint32_t pending;
+    uint32_t enable;
+    uint8_t priority[CLABPU_INTC_NUM_SOURCES];
+    qemu_irq cpu_irq;
 };
 
 enum {
-	CLABPU_IRQ_EDC_ERR = 0,
-	CLABPU_IRQ_TIMER = 1,
-	CLABPU_IRQ_GPIO = 2,
+    CLABPU_IRQ_EDC_ERR = 0,
+    CLABPU_IRQ_TIMER = 1,
+    CLABPU_IRQ_GPIO = 2,
 };
 
-#endif // HW_INTC_CLABPU_INTC_H
+#endif /* HW_INTC_CLABPU_INTC_H */
