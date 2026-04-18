@@ -7,14 +7,6 @@ config RISCV_NUMA
 config IBEX
     bool
 
-config CLABPU
-    bool
-    default y
-    depends on RISCV64
-    select RISCV_NUMA
-    select HTIF
-    select RISCV_ACLINT
-
 # RISC-V machines in alphabetical order
 
 config MICROCHIP_PFSOC
@@ -127,3 +119,21 @@ config SPIKE
     select HTIF
     select RISCV_ACLINT
     select SIFIVE_PLIC
+
+config CLABPU
+    bool
+    default y
+    depends on RISCV64
+    select RISCV_NUMA
+    select HTIF
+    select RISCV_ACLINT
+    select SIFIVE_PLIC
+    select CLABPU_INTC
+    select CLABPU_EDC
+    select CLABPU_TIMER
+
+config CLABPU_EDC
+    bool
+    default y
+    depends on CLABPU
+    select CLABPU_INTC

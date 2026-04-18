@@ -6,6 +6,7 @@
 #include "hw/boards.h"
 #include "hw/riscv/clabpu.h"
 #include "hw/intc/clabpu_intc.h"
+#include "hw/timer/clabpu_timer.h"
 #include "hw/riscv/clabpu_edc.h"
 #include "qapi/error.h"
 #include "exec/address-spaces.h"
@@ -15,6 +16,7 @@ static const MemMapEntry clabpu_memmap[] = {
 	[CLABPU_HTIF] = { 0x1000000, 0x1000 },
 	[CLABPU_CLINT] = { 0x2000000, 0x10000 },
 	[CLABPU_INTC_ADDR] = { 0x10000000, 0x1000 },
+	[CLABPU_TIMER_ADDR] = { 0x10000000, 0x1000 },
 	[CLABPU_DRAM] = { 0x80000000, 0x0 },
 };
 
@@ -56,6 +58,25 @@ static void clabpu_init_edc(CLabPUState *clabpu)
 			   qdev_get_gpio_in(clabpu->intc, CLABPU_IRQ_EDC_ERR));
 
 	clabpu->edc = dev;
+}
+
+static void clabpu_init_timer(CLabPUState *clabpu)
+{
+	DeviceState *dev;
+	SysBusDevice *sbd;
+
+	dev = qdev_new(TYPE_CLABPU_TIMER);
+	sbd = SYS_BUS_DEVICE(dev);
+
+	object_property_set_int(OBJECT(dev), "frequency", 1000000,
+				&error_abort);
+	object_property_add_child(OBJECT(clabpu), "timer", OBJECT(dev));
+
+	sysbus_realize_and_unref(sbd, &error_fatal);
+	sysbus_mmio_map(sbd, 0, clabpu_memmap[CLABPU_TIMER_ADDR].base);
+
+	sysbus_connect_irq(sbd, 0,
+			   qdev_get_gpio_in(clabpu->intc, CLABPU_IRQ_TIMER));
 }
 
 static void clabpu_init_cpu(CLabPUState *clabpu, MachineState *machine)
@@ -117,6 +138,7 @@ static void clabpu_init_dev(CLabPUState *clabpu, MachineState *machine)
 {
 	clabpu_init_intc(clabpu, machine);
 	clabpu_init_edc(clabpu);
+	clabpu_init_timer(clabpu);
 }
 
 static void clabpu_init_boot(CLabPUState *clabpu)
