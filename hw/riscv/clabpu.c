@@ -176,7 +176,7 @@ void clabpu_machine_init(ObjectClass *oc, void *data)
     mc->default_ram_id = "clabpu.ram";
     mc->max_cpus = 1;
     mc->default_cpus = 1;
-    /*RISC-V specific properties*/
+    /* RISC-V specific properties */
     mc->possible_cpu_arch_ids = riscv_numa_possible_cpu_arch_ids;
     mc->cpu_index_to_instance_props = riscv_numa_cpu_index_to_props;
     mc->get_default_cpu_node_id = riscv_numa_get_default_cpu_node_id;
